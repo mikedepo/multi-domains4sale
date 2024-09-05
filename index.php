@@ -87,165 +87,156 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
     <!-- EmailJS script -->
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script type="text/javascript">
-      document.addEventListener("DOMContentLoaded", function() {
-        var emailjsUserId = "<?php echo $emailjsUserId; ?>";
-        var emailjsServiceId = "<?php echo $emailjsServiceId; ?>";
-        var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
-        var priceValue = <?php echo $priceValue ? $priceValue : 'null'; ?>; // Get price as a number
-        var redirectUrl = "<?php echo $redirectUrl; ?>"; // Get the redirect URL or null
-        var countdownTime = 5; // Initial countdown time in seconds
+     document.addEventListener("DOMContentLoaded", function() {
+  var emailjsUserId = "<?php echo $emailjsUserId; ?>";
+  var emailjsServiceId = "<?php echo $emailjsServiceId; ?>";
+  var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
+  var priceValue = <?php echo $priceValue ? $priceValue : 'null'; ?>; // Get price as a number
+  var redirectUrl = "<?php echo $redirectUrl; ?>"; // Get the redirect URL or null
+  var countdownTime = 5; // Initial countdown time in seconds
 
-        emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
+  emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
 
-        // Correct the script to set the domain name dynamically
-        var domain = window.location.hostname;
-        document.getElementById("domainname").innerHTML = "<h1>" + domain + "</h1>";
+  // Correct the script to set the domain name dynamically
+  var domain = window.location.hostname;
+  document.getElementById("domainname").innerHTML = "<h1>" + domain + "</h1>";
 
-        // Set domain in the hidden input field
-        document.getElementById("hiddenDomain").value = domain;
+  // Set domain in the hidden input field
+  document.getElementById("hiddenDomain").value = domain;
 
-        // Show initial message and set up redirection
-        const contentSection = document.getElementById('content-section');
-        const redirectMessage = document.getElementById('redirect-message');
-        const countdownElement = document.getElementById('countdown-timer');
-        let redirectTimeout;
-        let countdownInterval;
+  // Show initial message and set up redirection
+  const contentSection = document.getElementById('content-section');
+  const redirectMessage = document.getElementById('redirect-message');
+  const countdownElement = document.getElementById('countdown-timer');
+  let redirectTimeout;
+  let countdownInterval;
 
-         if (redirectUrl) {
-            // Show the redirect message and start the countdown
-            redirectMessage.style.display = 'block';
-            countdownElement.textContent = countdownTime; // Set initial countdown
+  if (redirectUrl) {
+    // Show the redirect message and start the countdown
+    redirectMessage.style.display = 'block';
+    countdownElement.textContent = countdownTime; // Set initial countdown
 
-            countdownInterval = setInterval(function() {
-              countdownTime--;
-              countdownElement.textContent = countdownTime; // Update countdown display
+    countdownInterval = setInterval(function() {
+      countdownTime--;
+      countdownElement.textContent = countdownTime; // Update countdown display
 
-              if (countdownTime <= 0) {
-                clearInterval(countdownInterval); // Stop the countdown
-                window.location.href = redirectUrl; // Redirect the user
-              }
-            }, 1000);
+      if (countdownTime <= 0) {
+        clearInterval(countdownInterval); // Stop the countdown
+        window.location.href = redirectUrl; // Redirect the user
+      }
+    }, 1000);
 
-            // Set the timeout for redirection
-            redirectTimeout = setTimeout(function() {
-              window.location.href = redirectUrl;
-            }, countdownTime * 1000);
-          } else {
-            // Hide the redirect message and show the offer form immediately
-            redirectMessage.style.display = 'none';
-            contentSection.style.display = 'block';
-          }
+    // Set the timeout for redirection
+    redirectTimeout = setTimeout(function() {
+      window.location.href = redirectUrl;
+    }, countdownTime * 1000);
+  } else {
+    // Hide the redirect message and show the offer form immediately
+    redirectMessage.style.display = 'none';
+    contentSection.style.display = 'block';
+  }
 
-          // If the user clicks the link, stop the redirection and countdown, and show the form content
-          document.getElementById('cancel-redirect').addEventListener('click', function(e) {
-            e.preventDefault();
-            clearTimeout(redirectTimeout);  // Stop redirection
-            clearInterval(countdownInterval);  // Stop the countdown
-            redirectMessage.style.display = 'none';
-            contentSection.style.display = 'block';
+  // If the user clicks the link, stop the redirection and countdown, and show the form content
+  document.getElementById('cancel-redirect').addEventListener('click', function(e) {
+    e.preventDefault();
+    clearTimeout(redirectTimeout);  // Stop redirection
+    clearInterval(countdownInterval);  // Stop the countdown
+    redirectMessage.style.display = 'none';
+    contentSection.style.display = 'block';
+  });
+
+  // Function to show warning messages (already implemented)
+  function showWarning(input, message) {
+    let warningElement = input.parentElement.querySelector('.warning');
+    if (!warningElement) {
+      warningElement = document.createElement('div');
+      warningElement.className = 'warning';
+      input.parentElement.appendChild(warningElement);
+    }
+    warningElement.textContent = message;
+  }
+
+  // Real-time offer validation (already implemented)
+  document.getElementById("inputOffer").addEventListener("input", function() {
+    const offerValue = parseFloat(this.value);
+    if (!isNaN(offerValue) && priceValue && offerValue < 0.8 * priceValue) {
+      showWarning(this, "Offers are more likely to be accepted if they are 80% of the asking price or more.");
+    } else {
+      const warningElement = this.parentElement.querySelector('.warning');
+      if (warningElement) {
+        warningElement.remove();
+      }
+    }
+  });
+
+  // Form validation function (already implemented)
+  function validateForm() {
+    document.querySelectorAll('.error').forEach(el => el.remove());
+
+    let valid = true;
+    const name = document.getElementById("inputName");
+    const email = document.getElementById("inputEmail");
+    const message = document.getElementById("inputMessage");
+    const offer = document.getElementById("inputOffer");
+
+    if (name.value.trim() === "") {
+      showError(name, "Name is required");
+      valid = false;
+    }
+
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (email.value.trim() === "") {
+      showError(email, "Email is required");
+      valid = false;
+    } else if (!emailPattern.test(email.value)) {
+      showError(email, "Please enter a valid email address");
+      valid = false;
+    }
+
+    if (message.value.trim() === "") {
+      showError(message, "Message is required");
+      valid = false;
+    }
+
+    if (offer.value.trim() === "") {
+      showError(offer, "Offer is required");
+      valid = false;
+    } else if (isNaN(offer.value) || offer.value <= 0) {
+      showError(offer, "Please enter a valid numeric offer");
+      valid = false;
+    }
+
+    return valid;
+  }
+
+  function showError(input, message) {
+    const errorElement = document.createElement('div');
+    errorElement.className = 'error';
+    errorElement.textContent = message;
+    input.parentElement.appendChild(errorElement);
+  }
+
+  // Handle form submission with validation (already implemented)
+  document.getElementById('contact-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (validateForm()) {
+      emailjs.sendForm(emailjsServiceId, emailjsTemplateId, this)
+        .then(function() {
+          document.getElementById('confirmation-message').innerHTML = "Thank you! Your inquiry has been sent.";
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
           });
-
-        // Function to show warning messages (already implemented)
-        function showWarning(input, message) {
-          let warningElement = input.parentElement.querySelector('.warning');
-          if (!warningElement) {
-            warningElement = document.createElement('div');
-            warningElement.className = 'warning';
-            input.parentElement.appendChild(warningElement);
-          }
-          warningElement.textContent = message;
-        }
-
-        // Real-time offer validation (already implemented)
-        document.getElementById("inputOffer").addEventListener("input", function() {
-          const offerValue = parseFloat(this.value);
-          if (!isNaN(offerValue) && priceValue && offerValue < 0.8 * priceValue) {
-            showWarning(this, "Offers are more likely to be accepted if they are 80% of the asking price or more.");
-          } else {
-            const warningElement = this.parentElement.querySelector('.warning');
-            if (warningElement) {
-              warningElement.remove();
-            }
-          }
+        }, function(error) {
+          document.getElementById('confirmation-message').innerHTML = "Failed to send your inquiry. Please try again.";
+          document.getElementById('confirmation-message').style.color = "red";
         });
+    }
+  });
+});
 
-        // Form validation function
-        function validateForm() {
-          // Clear previous error messages
-          document.querySelectorAll('.error').forEach(el => el.remove());
-
-          let valid = true;
-          const name = document.getElementById("inputName");
-          const email = document.getElementById("inputEmail");
-          const message = document.getElementById("inputMessage");
-          const offer = document.getElementById("inputOffer");
-
-          // Name validation
-          if (name.value.trim() === "") {
-            showError(name, "Name is required");
-            valid = false;
-          }
-
-          // Email validation
-          const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-          if (email.value.trim() === "") {
-            showError(email, "Email is required");
-            valid = false;
-          } else if (!emailPattern.test(email.value)) {
-            showError(email, "Please enter a valid email address");
-            valid = false;
-          }
-
-          // Message validation
-          if (message.value.trim() === "") {
-            showError(message, "Message is required");
-            valid = false;
-          }
-
-          // Offer validation
-          if (offer.value.trim() === "") {
-            showError(offer, "Offer is required");
-            valid = false;
-          } else if (isNaN(offer.value) || offer.value <= 0) {
-            showError(offer, "Please enter a valid numeric offer");
-            valid = false;
-          }
-
-          return valid;
-        }
-
-        // Function to show error messages
-        function showError(input, message) {
-          const errorElement = document.createElement('div');
-          errorElement.className = 'error';
-          errorElement.textContent = message;
-          input.parentElement.appendChild(errorElement);
-        }
-
-        // Handle form submission with validation
-        document.getElementById('contact-form').addEventListener('submit', function(event) {
-          event.preventDefault(); // Prevent the default form submission behavior
-
-          if (validateForm()) {
-            // EmailJS sends the form directly, no need to use FormData
-            emailjs.sendForm(emailjsServiceId, emailjsTemplateId, this)
-              .then(function() {
-                  // Show success message
-                  document.getElementById('confirmation-message').innerHTML = "Thank you! Your inquiry has been sent.";
-
-                  // Trigger confetti
-                  confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                  });
-              }, function(error) {
-                  document.getElementById('confirmation-message').innerHTML = "Failed to send your inquiry. Please try again.";
-                  document.getElementById('confirmation-message').style.color = "red";
-              });
-          }
-        });
-      });
     </script>
 
   </head>
@@ -253,7 +244,7 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
 
     <!-- Message shown for 5 seconds -->
     <div id="redirect-message" class="container text-center">
-      <p>You will be redirected in 5 seconds, to buy this domain, <a href="#" id="cancel-redirect">click here</a>.</p>
+     <p>You will be redirected in <span id="countdown-timer">5</span> seconds, to buy this domain, <a href="#" id="cancel-redirect">click here</a>.</p>
     </div>
 
     <!-- Content (hidden initially, shown if the user clicks the link) -->

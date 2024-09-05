@@ -41,7 +41,7 @@ domainname =location.hostname;
 		<h2>This domain is for sale Only - CAD $3500</h2>
 		<h3>Contact site owner below:</h3>
 		
-        <form class="form-horizontal" role="form">
+        <form class="form-horizontal" role="form" method="POST" action="contact_process.php">
           <div class="form-group">
             <label for="inputName" class="col-sm-2 control-label">Name</label>
             <div class="col-sm-10">

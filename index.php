@@ -2,8 +2,9 @@
 // Get domain prices from environment variable
 $domainPrices = json_decode(getenv('DOMAIN_PRICES'), true);
 
-// Get the current domain
-$domain = $_SERVER['HTTP_HOST'];
+// Get the current domain and normalize it (remove "www." if present)
+$domain = strtolower($_SERVER['HTTP_HOST']);
+$domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 
 // Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
 $price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLEASE CONTACT FOR PRICE";

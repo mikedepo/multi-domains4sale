@@ -9,6 +9,11 @@ $domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 // Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
 $price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLEASE CONTACT FOR PRICE";
 
+// Get EmailJS keys from environment variables
+$emailjsUserId = $_ENV['EMAILJS_USER_ID'] ?? '';
+$emailjsServiceId = $_ENV['EMAILJS_SERVICE_ID'] ?? '';
+$emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
+
 ?>
 
 
@@ -64,27 +69,95 @@ $price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLE
         font-size: 16px;
         font-weight: bold;
       }
+      .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+      }
     </style>
 
     <!-- EmailJS script -->
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script type="text/javascript">
-      (function() {
-          emailjs.init("Ev83eOudWBJjeARnB"); // Replace with your EmailJS user ID
-      })();
-    </script>
-
-    <!-- Confetti JS -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-
-    <script>
-      // Correct the script to set the domain name dynamically
       document.addEventListener("DOMContentLoaded", function() {
+        var emailjsUserId = "<?php echo $emailjsUserId; ?>";
+        var emailjsServiceId = "<?php echo $emailjsServiceId; ?>";
+        var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
+
+        emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
+
+        // Correct the script to set the domain name dynamically
         var domain = window.location.hostname;
         document.getElementById("domainname").innerHTML = "<h1>" + domain + "</h1>";
 
         // Set domain in the hidden input field
         document.getElementById("hiddenDomain").value = domain;
+
+        // Form validation function
+        function validateForm() {
+          // Clear previous error messages
+          document.querySelectorAll('.error').forEach(el => el.remove());
+
+          let valid = true;
+          const name = document.getElementById("inputName");
+          const email = document.getElementById("inputEmail");
+          const message = document.getElementById("inputMessage");
+
+          // Name validation
+          if (name.value.trim() === "") {
+            showError(name, "Name is required");
+            valid = false;
+          }
+
+          // Email validation
+          const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+          if (email.value.trim() === "") {
+            showError(email, "Email is required");
+            valid = false;
+          } else if (!emailPattern.test(email.value)) {
+            showError(email, "Please enter a valid email address");
+            valid = false;
+          }
+
+          // Message validation
+          if (message.value.trim() === "") {
+            showError(message, "Message is required");
+            valid = false;
+          }
+
+          return valid;
+        }
+
+        // Function to show error messages
+        function showError(input, message) {
+          const errorElement = document.createElement('div');
+          errorElement.className = 'error';
+          errorElement.textContent = message;
+          input.parentElement.appendChild(errorElement);
+        }
+
+        // Handle form submission with validation
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+          event.preventDefault(); // Prevent the default form submission behavior
+
+          if (validateForm()) {
+            emailjs.sendForm(emailjsServiceId, emailjsTemplateId, this)
+              .then(function() {
+                  // Show success message
+                  document.getElementById('confirmation-message').innerHTML = "Thank you! Your inquiry has been sent.";
+
+                  // Trigger confetti
+                  confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                  });
+              }, function(error) {
+                  document.getElementById('confirmation-message').innerHTML = "Failed to send your inquiry. Please try again.";
+                  document.getElementById('confirmation-message').style.color = "red";
+              });
+          }
+        });
       });
     </script>
 
@@ -127,28 +200,6 @@ $price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLE
 
       <!-- Confirmation message div -->
       <div id="confirmation-message" class="confirmation-message text-center" style="color:green;"></div>
-
-      <script type="text/javascript">
-        document.getElementById('contact-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission behavior
-
-            emailjs.sendForm('service_7hk18q4', 'template_d0wsefs', this)
-                .then(function() {
-                    // Show success message
-                    document.getElementById('confirmation-message').innerHTML = "Thank you! Your inquiry has been sent.";
-
-                    // Trigger confetti
-                    confetti({
-                      particleCount: 100,
-                      spread: 70,
-                      origin: { y: 0.6 }
-                    });
-                }, function(error) {
-                    document.getElementById('confirmation-message').innerHTML = "Failed to send your inquiry. Please try again.";
-                    document.getElementById('confirmation-message').style.color = "red";
-                });
-        });
-      </script>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

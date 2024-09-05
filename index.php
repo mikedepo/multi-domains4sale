@@ -31,6 +31,13 @@ document.getElementById("domainname").innerHTML =
 domainname =location.hostname;
 </script>
 
+<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function() {
+      emailjs.init("Ev83eOudWBJjeARnB"); // Replace with your EmailJS user ID
+  })();
+</script>
+
   </head>
   <body>
 
@@ -40,8 +47,37 @@ domainname =location.hostname;
 	   <p id="domainname">Like the domain name?</p>		
 		<h2>This domain is for sale Only - CAD $13500</h2>
 		<h3>Contact site owner below:</h3>
-		<a href="mailto:johnlowen69@outlook.com">johnlowen69@outlook.com<a/>
-        </form>  
+		<form id="contact-form">
+    <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" name="name" class="form-control" id="inputName" placeholder="Your Name">
+    </div>
+
+    <div class="form-group">
+        <label for="inputEmail">Email</label>
+        <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Your Email">
+    </div>
+
+    <div class="form-group">
+        <label for="inputMessage">Message</label>
+        <textarea name="message" class="form-control" id="inputMessage" placeholder="Your Message"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+<script type="text/javascript">
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+
+        emailjs.sendForm('service_7hk18q4', 'template_d0wsefs', this)
+            .then(function() {
+                alert("Email sent successfully!");
+            }, function(error) {
+                alert("Failed to send email: " + JSON.stringify(error));
+            });
+    });
+</script>
       </div>
       <div class="col-sm-6">
 

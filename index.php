@@ -108,14 +108,15 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         const redirectMessage = document.getElementById('redirect-message');
         let redirectTimeout;
 
-         if (redirectUrl) {
+        if (redirectUrl) {
           // Show the redirect message and set a timeout for redirection
           redirectMessage.style.display = 'block';
           setTimeout(function() {
             window.location.href = redirectUrl;
           }, 5000);
         } else {
-          // No redirect URL, show the offer form immediately
+          // Hide the redirect message and show the offer form immediately
+          redirectMessage.style.display = 'none';
           contentSection.style.display = 'block';
         }
 
@@ -232,10 +233,13 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
 
   </head>
   <body>
+
+    <!-- Message shown for 5 seconds -->
     <div id="redirect-message" class="container text-center">
       <p>You will be redirected in 5 seconds, to buy this domain, <a href="#" id="cancel-redirect">click here</a>.</p>
     </div>
 
+    <!-- Content (hidden initially, shown if the user clicks the link) -->
     <div id="content-section" class="container" style="display: none;">
       <div class="text-center mb-5">
         <h1 id="domainname"> </h1> <!-- Domain name will be injected here -->

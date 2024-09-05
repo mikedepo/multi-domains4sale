@@ -93,6 +93,7 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
         var priceValue = <?php echo $priceValue ? $priceValue : 'null'; ?>; // Get price as a number
         var redirectUrl = "<?php echo $redirectUrl; ?>"; // Get the redirect URL or null
+        var countdownTime = 5; // Initial countdown time in seconds
 
         emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
 
@@ -106,27 +107,43 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         // Show initial message and set up redirection
         const contentSection = document.getElementById('content-section');
         const redirectMessage = document.getElementById('redirect-message');
+        const countdownElement = document.getElementById('countdown-timer');
         let redirectTimeout;
+        let countdownInterval;
 
-        if (redirectUrl) {
-          // Show the redirect message and set a timeout for redirection
-          redirectMessage.style.display = 'block';
-          setTimeout(function() {
-            window.location.href = redirectUrl;
-          }, 5000);
-        } else {
-          // Hide the redirect message and show the offer form immediately
-          redirectMessage.style.display = 'none';
-          contentSection.style.display = 'block';
-        }
+         if (redirectUrl) {
+            // Show the redirect message and start the countdown
+            redirectMessage.style.display = 'block';
+            countdownElement.textContent = countdownTime; // Set initial countdown
 
-        // If the user clicks the link, stop the redirection and show the form content
-        document.getElementById('cancel-redirect').addEventListener('click', function(e) {
-          e.preventDefault();
-          clearTimeout(redirectTimeout);
-          redirectMessage.style.display = 'none';
-          contentSection.style.display = 'block';
-        });
+            countdownInterval = setInterval(function() {
+              countdownTime--;
+              countdownElement.textContent = countdownTime; // Update countdown display
+
+              if (countdownTime <= 0) {
+                clearInterval(countdownInterval); // Stop the countdown
+                window.location.href = redirectUrl; // Redirect the user
+              }
+            }, 1000);
+
+            // Set the timeout for redirection
+            redirectTimeout = setTimeout(function() {
+              window.location.href = redirectUrl;
+            }, countdownTime * 1000);
+          } else {
+            // Hide the redirect message and show the offer form immediately
+            redirectMessage.style.display = 'none';
+            contentSection.style.display = 'block';
+          }
+
+          // If the user clicks the link, stop the redirection and countdown, and show the form content
+          document.getElementById('cancel-redirect').addEventListener('click', function(e) {
+            e.preventDefault();
+            clearTimeout(redirectTimeout);  // Stop redirection
+            clearInterval(countdownInterval);  // Stop the countdown
+            redirectMessage.style.display = 'none';
+            contentSection.style.display = 'block';
+          });
 
         // Function to show warning messages (already implemented)
         function showWarning(input, message) {

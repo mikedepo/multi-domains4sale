@@ -140,11 +140,8 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
           event.preventDefault(); // Prevent the default form submission behavior
 
           if (validateForm()) {
-            // Add domain to the message body by creating a formData object
-            const formData = new FormData(this);
-            formData.append("domain", window.location.hostname); // Add domain
-
-            emailjs.sendForm(emailjsServiceId, emailjsTemplateId, formData)
+            // EmailJS sends the form directly, no need to use FormData
+            emailjs.sendForm(emailjsServiceId, emailjsTemplateId, this)
               .then(function() {
                   // Show success message
                   document.getElementById('confirmation-message').innerHTML = "Thank you! Your inquiry has been sent.";

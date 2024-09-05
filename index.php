@@ -1,15 +1,11 @@
 <?php include('stats/stl.php'); 
 $domain= $_SERVER['HTTP_HOST'];
 // below added on 12/25/2018
-// Source: http://carlofontanos.com/adding-a-simple-math-captcha-to-your-form-in-php/
-    $num1=rand(1,9); //Generate First number between 1 and 9  
-    $num2=rand(1,9); //Generate Second number between 1 and 9  
-    $captcha_total=$num1+$num2;
-    $math = "$num1"." + "."$num2"." =";
-    $_SESSION['rand_code'] = $captcha_total;
-
-// end of addition.
-
+$num1=rand(1,9);  
+$num2=rand(1,9);  
+$captcha_total=$num1+$num2;
+$math = "$num1"." + "."$num2"." =";
+$_SESSION['rand_code'] = $captcha_total;
 ?>
 
 <!DOCTYPE html>
@@ -23,67 +19,81 @@ $domain= $_SERVER['HTTP_HOST'];
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet">
 
+    <script>
+    document.getElementById("domainname").innerHTML = 
+    "<h1>" + window.location.hostname+ "</h1>;
+    domainname = location.hostname;
+    </script>
 
+    <!-- EmailJS script -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+      (function() {
+          emailjs.init("Ev83eOudWBJjeARnB"); // Replace with your EmailJS user ID
+      })();
+    </script>
 
-<script>
-document.getElementById("domainname").innerHTML = 
-"<h1>" + window.location.hostname+ "</h1>;
-domainname =location.hostname;
-</script>
-
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-  (function() {
-      emailjs.init("Ev83eOudWBJjeARnB"); // Replace with your EmailJS user ID
-  })();
-</script>
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 
   </head>
   <body>
 
     <div class="container">
       <div class="col-sm-6">
-	   <h1> <?php echo $domain; ?> </h1>
-	   <p id="domainname">Like the domain name?</p>		
-		<h2>This domain is for sale Only - CAD $13500</h2>
-		<h3>Contact site owner below:</h3>
-		<form id="contact-form">
-    <div class="form-group">
-        <label for="inputName">Name</label>
-        <input type="text" name="name" class="form-control" id="inputName" placeholder="Your Name">
-    </div>
+        <h1> <?php echo $domain; ?> </h1>
+        <p id="domainname">Like the domain name?</p>        
+        <h2>This domain is for sale Only - CAD $13500</h2>
+        <h3>Contact site owner below:</h3>
+        
+        <form id="contact-form">
+          <div class="form-group">
+              <label for="inputName">Name</label>
+              <input type="text" name="name" class="form-control" id="inputName" placeholder="Your Name">
+          </div>
 
-    <div class="form-group">
-        <label for="inputEmail">Email</label>
-        <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Your Email">
-    </div>
+          <div class="form-group">
+              <label for="inputEmail">Email</label>
+              <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Your Email">
+          </div>
 
-    <div class="form-group">
-        <label for="inputMessage">Message</label>
-        <textarea name="message" class="form-control" id="inputMessage" placeholder="Your Message"></textarea>
-    </div>
+          <div class="form-group">
+              <label for="inputMessage">Message</label>
+              <textarea name="message" class="form-control" id="inputMessage" placeholder="Your Message"></textarea>
+          </div>
 
-    <button type="submit" class="btn btn-success">Submit</button>
-</form>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </form>
 
-<script type="text/javascript">
-    document.getElementById('contact-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission behavior
+        <!-- Confirmation message div -->
+        <div id="confirmation-message" style="margin-top: 20px; font-weight: bold; color: green;"></div>
 
-        emailjs.sendForm('service_7hk18q4', 'template_d0wsefs', this)
-            .then(function() {
-                alert("Email sent successfully!");
-            }, function(error) {
-                alert("Failed to send email: " + JSON.stringify(error));
+        <script type="text/javascript">
+            document.getElementById('contact-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission behavior
+
+                emailjs.sendForm('service_7hk18q4', 'template_d0wsefs', this)
+                    .then(function() {
+                        // Show success message
+                        document.getElementById('confirmation-message').innerHTML = "Email sent successfully!";
+
+                        // Trigger confetti
+                        confetti({
+                          particleCount: 100,
+                          spread: 70,
+                          origin: { y: 0.6 }
+                        });
+                    }, function(error) {
+                        document.getElementById('confirmation-message').innerHTML = "Failed to send email: " + JSON.stringify(error);
+                        document.getElementById('confirmation-message').style.color = "red";
+                    });
             });
-    });
-</script>
+        </script>
       </div>
       <div class="col-sm-6">
-
+      
       </div>
     </div>
-
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>

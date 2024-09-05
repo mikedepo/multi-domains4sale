@@ -38,41 +38,9 @@ domainname =location.hostname;
       <div class="col-sm-6">
 	   <h1> <?php echo $domain; ?> </h1>
 	   <p id="domainname">Like the domain name?</p>		
-		<h2>This domain is for sale Only - CAD $3500</h2>
+		<h2>This domain is for sale Only - CAD $13500</h2>
 		<h3>Contact site owner below:</h3>
-		
-        <form class="form-horizontal" role="form" method="POST" action="contact_process.php">
-          <div class="form-group">
-            <label for="inputName" class="col-sm-2 control-label">Name</label>
-            <div class="col-sm-10">
-              <input type="text" name="name" class="form-control" id="inputName" placeholder="Your Name">
-            </div>
-          </div>
-		  
-          <div class="form-group">
-            <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-            <div class="col-sm-10">
-              <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Your Email">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputMessage" class="col-sm-2 control-label">Message</label>
-            <div class="col-sm-10">
-              <input type="text" name="message" class="form-control" id="inputMessage" placeholder="Your Message">
-            </div>
-          </div>
-          <div></div>
-              <label for="inputHuman" class="col-sm-2 control-label">
-              <?php echo $math; ?></label>
-            <div class="col-sm-10">
-              <input type="text" style = "width: 150px !important;" name="human" class="form-control" id="human" placeholder="Are You Human?">
-            </div>
-          
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-success">Submit</button>
-            </div>
-          </div>
-           
+		<a href="mailto:johnlowen69@outlook.com">johnlowen69@outlook.com<a/>
         </form>  
       </div>
       <div class="col-sm-6">

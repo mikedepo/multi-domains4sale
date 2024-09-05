@@ -224,10 +224,18 @@ If you wish to, you may lighten the script by removing comments and everything b
 # WORKING
 
 # Create log file with header if it does not exist
-if (!file_exists($log))
-{
-file_put_contents($log,"$log_file_header\n");
+$logDir = dirname($log);  // Get the directory path
+
+// Ensure the stats/data directory exists
+if (!file_exists($logDir)) {
+    mkdir($logDir, 0755, true);  // Create the directory if it doesn't exist
 }
+
+// Ensure the log file exists
+if (!file_exists($log)) {
+    file_put_contents($log, "$log_file_header\n");  // Create the file with the header if it doesn't exist
+}
+
 # Cyclic logging
 if (($no_cycle == 0) && (time() >= $cycle_start))
 {
@@ -260,17 +268,22 @@ if (($no_cycle == 1) && (time() > $cycle_end) && (!file_exists($archive_se)))
     file_put_contents($log,"$log_file_header\n");
     }
 # Sum the contents of $tally (tally.txt)
-if (file_exists($tally))
-    {
+if (file_exists($tally)) {
     $tal = file($tally);
     $tote = array_sum($tal);
-    } else
-    {
-    $tote = 0;
-    }
+} else {
+    $tote = 0;  // If the tally file doesn't exist, set tote to 0
+}
+
 
 # Count Log File's Lines
-$count = (count(file($log))-1);
+if (file_exists($log)) {
+    $logLines = file($log);
+    $count = count($logLines) - 1;
+} else {
+    $count = 0;  // If the file doesn't exist, set count to 0
+}
+
 
 # START COUNTER DISPLAY
 

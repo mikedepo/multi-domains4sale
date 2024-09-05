@@ -7,7 +7,8 @@ $domain = strtolower($_SERVER['HTTP_HOST']);
 $domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 
 // Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
-$price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLEASE CONTACT FOR PRICE";
+$priceValue = isset($domainPrices[$domain]) ? $domainPrices[$domain] : null;
+$price = $priceValue ? "CAD $" . $priceValue : "PLEASE CONTACT FOR PRICE";
 
 // Get EmailJS keys from environment variables
 $emailjsUserId = $_ENV['EMAILJS_USER_ID'] ?? '';
@@ -73,6 +74,11 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         font-size: 14px;
         margin-top: 5px;
       }
+      .warning {
+        color: orange;
+        font-size: 14px;
+        margin-top: 5px;
+      }
     </style>
 
     <!-- EmailJS script -->
@@ -82,6 +88,7 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         var emailjsUserId = "<?php echo $emailjsUserId; ?>";
         var emailjsServiceId = "<?php echo $emailjsServiceId; ?>";
         var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
+        var priceValue = <?php echo $priceValue ? $priceValue : 'null'; ?>; // Get price as a number
 
         emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
 
@@ -95,12 +102,13 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         // Form validation function
         function validateForm() {
           // Clear previous error messages
-          document.querySelectorAll('.error').forEach(el => el.remove());
+          document.querySelectorAll('.error, .warning').forEach(el => el.remove());
 
           let valid = true;
           const name = document.getElementById("inputName");
           const email = document.getElementById("inputEmail");
           const message = document.getElementById("inputMessage");
+          const offer = document.getElementById("inputOffer");
 
           // Name validation
           if (name.value.trim() === "") {
@@ -124,6 +132,17 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
             valid = false;
           }
 
+          // Offer validation
+          if (offer.value.trim() === "") {
+            showError(offer, "Offer is required");
+            valid = false;
+          } else if (isNaN(offer.value) || offer.value <= 0) {
+            showError(offer, "Please enter a valid numeric offer");
+            valid = false;
+          } else if (priceValue && offer.value < 0.8 * priceValue) {
+            showWarning(offer, "Offers are more likely to be accepted if they are 80% of the asking price or more.");
+          }
+
           return valid;
         }
 
@@ -133,6 +152,14 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
           errorElement.className = 'error';
           errorElement.textContent = message;
           input.parentElement.appendChild(errorElement);
+        }
+
+        // Function to show warning messages
+        function showWarning(input, message) {
+          const warningElement = document.createElement('div');
+          warningElement.className = 'warning';
+          warningElement.textContent = message;
+          input.parentElement.appendChild(warningElement);
         }
 
         // Handle form submission with validation
@@ -188,6 +215,11 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         <div class="form-group">
           <label for="inputMessage">Your Message</label>
           <textarea name="message" class="form-control" id="inputMessage" placeholder="Enter your message"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="inputOffer">Make an Offer (CAD)</label>
+          <input type="number" name="offer" class="form-control" id="inputOffer" placeholder="Enter your offer">
         </div>
 
         <!-- Hidden input to hold the domain name -->

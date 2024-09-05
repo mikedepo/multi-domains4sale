@@ -26,6 +26,7 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Domain for Sale</title>
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -38,6 +39,12 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
       }
       h1, h2, h3 {
         color: #333;
+      }
+      #domainname h1 {
+          word-wrap: break-word;
+          font-size: 6vw; /* Responsive font size for mobile devices */
+          overflow-wrap: break-word; /* Ensure words break correctly */
+          text-align: center; /* Center the domain name */
       }
       .container {
         margin-top: 50px;
@@ -251,7 +258,8 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
     <div id="content-section" class="container" style="display: none;">
       <div class="text-center mb-5">
         <h1 id="domainname"> </h1> <!-- Domain name will be injected here -->
-        <p class="lead">This domain is available for purchase!</p>        
+        <p class="lead">This domain is available for purchase! <br>Domain sales are securely handled through a Domain broker.</p>
+      
         <!-- Dynamic price will be displayed here -->
         <h2 class="price">Price: <?php echo $price; ?></h2>
       </div>

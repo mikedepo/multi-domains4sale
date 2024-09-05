@@ -1,4 +1,10 @@
 <?php
+// Debug the DOMAIN_PRICES environment variable
+echo "<pre>DOMAIN_PRICES: " . getenv('DOMAIN_PRICES') . "</pre>";
+
+// Debug the domain fetched by PHP
+echo "<pre>PHP Domain: " . $_SERVER['HTTP_HOST'] . "</pre>";
+
 // Get domain prices from environment variable
 $domainPrices = json_decode(getenv('DOMAIN_PRICES'), true);
 
@@ -6,9 +12,19 @@ $domainPrices = json_decode(getenv('DOMAIN_PRICES'), true);
 $domain = strtolower($_SERVER['HTTP_HOST']);
 $domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 
+// Debugging the normalized domain and available prices
+echo "<pre>Normalized Domain: " . $domain . "</pre>";
+echo "<pre>Available Domain Prices: ";
+print_r($domainPrices);
+echo "</pre>";
+
 // Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
 $price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLEASE CONTACT FOR PRICE";
+
+// Output the price
+echo "<h2>This domain is for sale Only - $price</h2>";
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

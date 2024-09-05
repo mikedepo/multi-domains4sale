@@ -16,7 +16,6 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
 
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
   <head>

@@ -1,3 +1,10 @@
+
+<?php
+echo "<pre>";
+print_r($_ENV);  // To see all environment variables
+echo "</pre>";
+?>
+
 <?php
 // Debug the DOMAIN_PRICES environment variable
 echo "<pre>DOMAIN_PRICES: " . getenv('DOMAIN_PRICES') . "</pre>";
@@ -6,7 +13,7 @@ echo "<pre>DOMAIN_PRICES: " . getenv('DOMAIN_PRICES') . "</pre>";
 echo "<pre>PHP Domain: " . $_SERVER['HTTP_HOST'] . "</pre>";
 
 // Get domain prices from environment variable
-$domainPrices = json_decode(getenv('DOMAIN_PRICES'), true);
+$domainPrices = isset($_ENV['DOMAIN_PRICES']) ? json_decode($_ENV['DOMAIN_PRICES'], true) : [];
 
 // Get the current domain and normalize it (remove "www." if present)
 $domain = strtolower($_SERVER['HTTP_HOST']);

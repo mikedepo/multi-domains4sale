@@ -1,11 +1,12 @@
-<?php include('stats/stl.php'); 
-$domain= $_SERVER['HTTP_HOST'];
-// below added on 12/25/2018
-$num1=rand(1,9);  
-$num2=rand(1,9);  
-$captcha_total=$num1+$num2;
-$math = "$num1"." + "."$num2"." =";
-$_SESSION['rand_code'] = $captcha_total;
+<?php
+// Get domain prices from environment variable
+$domainPrices = json_decode(getenv('DOMAIN_PRICES'), true);
+
+// Get the current domain
+$domain = $_SERVER['HTTP_HOST'];
+
+// Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
+$price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLEASE CONTACT FOR PRICE";
 ?>
 
 <!DOCTYPE html>
@@ -19,12 +20,6 @@ $_SESSION['rand_code'] = $captcha_total;
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet">
 
-    <script>
-    document.getElementById("domainname").innerHTML = 
-    "<h1>" + window.location.hostname+ "</h1>;
-    domainname = location.hostname;
-    </script>
-
     <!-- EmailJS script -->
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -36,14 +31,26 @@ $_SESSION['rand_code'] = $captcha_total;
     <!-- Confetti JS -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 
+    <script>
+      // Correct the script to set the domain name dynamically
+      document.addEventListener("DOMContentLoaded", function() {
+        var domain = window.location.hostname;
+        document.getElementById("domainname").innerHTML = "<h1>" + domain + "</h1>";
+
+        // Set domain in the hidden input field
+        document.getElementById("hiddenDomain").value = domain;
+      });
+    </script>
+
   </head>
   <body>
 
     <div class="container">
       <div class="col-sm-6">
-        <h1> <?php echo $domain; ?> </h1>
-        <p id="domainname">Like the domain name?</p>        
-        <h2>This domain is for sale Only - CAD $13500</h2>
+        <h1 id="domainname"> </h1> <!-- Domain name will be injected here -->
+        <p>Like the domain name?</p>        
+        <!-- Dynamic price will be displayed here -->
+        <h2>This domain is for sale Only - <?php echo $price; ?></h2>
         <h3>Contact site owner below:</h3>
         
         <form id="contact-form">
@@ -61,6 +68,9 @@ $_SESSION['rand_code'] = $captcha_total;
               <label for="inputMessage">Message</label>
               <textarea name="message" class="form-control" id="inputMessage" placeholder="Your Message"></textarea>
           </div>
+
+          <!-- Hidden input to hold the domain name -->
+          <input type="hidden" name="domainname" id="hiddenDomain">
 
           <button type="submit" class="btn btn-success">Submit</button>
         </form>

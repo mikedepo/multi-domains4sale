@@ -1,17 +1,4 @@
-
 <?php
-echo "<pre>";
-print_r($_ENV);  // To see all environment variables
-echo "</pre>";
-?>
-
-<?php
-// Debug the DOMAIN_PRICES environment variable
-echo "<pre>DOMAIN_PRICES: " . getenv('DOMAIN_PRICES') . "</pre>";
-
-// Debug the domain fetched by PHP
-echo "<pre>PHP Domain: " . $_SERVER['HTTP_HOST'] . "</pre>";
-
 // Get domain prices from environment variable
 $domainPrices = isset($_ENV['DOMAIN_PRICES']) ? json_decode($_ENV['DOMAIN_PRICES'], true) : [];
 
@@ -19,17 +6,9 @@ $domainPrices = isset($_ENV['DOMAIN_PRICES']) ? json_decode($_ENV['DOMAIN_PRICES
 $domain = strtolower($_SERVER['HTTP_HOST']);
 $domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 
-// Debugging the normalized domain and available prices
-echo "<pre>Normalized Domain: " . $domain . "</pre>";
-echo "<pre>Available Domain Prices: ";
-print_r($domainPrices);
-echo "</pre>";
-
 // Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
 $price = isset($domainPrices[$domain]) ? "CAD $" . $domainPrices[$domain] : "PLEASE CONTACT FOR PRICE";
 
-// Output the price
-echo "<h2>This domain is for sale Only - $price</h2>";
 ?>
 
 
@@ -41,8 +20,51 @@ echo "<h2>This domain is for sale Only - $price</h2>";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Domain for Sale</title>
 
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/common.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+      }
+      h1, h2, h3 {
+        color: #333;
+      }
+      .container {
+        margin-top: 50px;
+        max-width: 900px;
+        background-color: #fff;
+        padding: 40px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .price {
+        color: #28a745;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .submit-btn {
+        background-color: #28a745;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 5px;
+      }
+      .submit-btn:hover {
+        background-color: #218838;
+        color: white;
+      }
+      .form-group label {
+        font-weight: bold;
+      }
+      .confirmation-message {
+        margin-top: 20px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    </style>
 
     <!-- EmailJS script -->
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
@@ -70,67 +92,67 @@ echo "<h2>This domain is for sale Only - $price</h2>";
   <body>
 
     <div class="container">
-      <div class="col-sm-6">
+      <div class="text-center mb-5">
         <h1 id="domainname"> </h1> <!-- Domain name will be injected here -->
-        <p>Like the domain name?</p>        
+        <p class="lead">This domain is available for purchase!</p>        
         <!-- Dynamic price will be displayed here -->
-        <h2>This domain is for sale Only - <?php echo $price; ?></h2>
-        <h3>Contact site owner below:</h3>
-        
-        <form id="contact-form">
-          <div class="form-group">
-              <label for="inputName">Name</label>
-              <input type="text" name="name" class="form-control" id="inputName" placeholder="Your Name">
-          </div>
-
-          <div class="form-group">
-              <label for="inputEmail">Email</label>
-              <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Your Email">
-          </div>
-
-          <div class="form-group">
-              <label for="inputMessage">Message</label>
-              <textarea name="message" class="form-control" id="inputMessage" placeholder="Your Message"></textarea>
-          </div>
-
-          <!-- Hidden input to hold the domain name -->
-          <input type="hidden" name="domainname" id="hiddenDomain">
-
-          <button type="submit" class="btn btn-success">Submit</button>
-        </form>
-
-        <!-- Confirmation message div -->
-        <div id="confirmation-message" style="margin-top: 20px; font-weight: bold; color: green;"></div>
-
-        <script type="text/javascript">
-            document.getElementById('contact-form').addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent the default form submission behavior
-
-                emailjs.sendForm('service_7hk18q4', 'template_d0wsefs', this)
-                    .then(function() {
-                        // Show success message
-                        document.getElementById('confirmation-message').innerHTML = "Email sent successfully!";
-
-                        // Trigger confetti
-                        confetti({
-                          particleCount: 100,
-                          spread: 70,
-                          origin: { y: 0.6 }
-                        });
-                    }, function(error) {
-                        document.getElementById('confirmation-message').innerHTML = "Failed to send email: " + JSON.stringify(error);
-                        document.getElementById('confirmation-message').style.color = "red";
-                    });
-            });
-        </script>
+        <h2 class="price">Price: <?php echo $price; ?></h2>
       </div>
-      <div class="col-sm-6">
+
+      <h3>Interested? Contact the owner below:</h3>
       
-      </div>
+      <form id="contact-form" class="mt-4">
+        <div class="form-group">
+          <label for="inputName">Your Name</label>
+          <input type="text" name="name" class="form-control" id="inputName" placeholder="Enter your name">
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail">Your Email</label>
+          <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Enter your email">
+        </div>
+
+        <div class="form-group">
+          <label for="inputMessage">Your Message</label>
+          <textarea name="message" class="form-control" id="inputMessage" placeholder="Enter your message"></textarea>
+        </div>
+
+        <!-- Hidden input to hold the domain name -->
+        <input type="hidden" name="domainname" id="hiddenDomain">
+
+        <div class="text-center">
+          <button type="submit" class="btn submit-btn">Submit Inquiry</button>
+        </div>
+      </form>
+
+      <!-- Confirmation message div -->
+      <div id="confirmation-message" class="confirmation-message text-center" style="color:green;"></div>
+
+      <script type="text/javascript">
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            emailjs.sendForm('service_7hk18q4', 'template_d0wsefs', this)
+                .then(function() {
+                    // Show success message
+                    document.getElementById('confirmation-message').innerHTML = "Thank you! Your inquiry has been sent.";
+
+                    // Trigger confetti
+                    confetti({
+                      particleCount: 100,
+                      spread: 70,
+                      origin: { y: 0.6 }
+                    });
+                }, function(error) {
+                    document.getElementById('confirmation-message').innerHTML = "Failed to send your inquiry. Please try again.";
+                    document.getElementById('confirmation-message').style.color = "red";
+                });
+        });
+      </script>
     </div>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/common.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
   </body>
 </html>

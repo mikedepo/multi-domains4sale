@@ -202,6 +202,9 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
       <div id="confirmation-message" class="confirmation-message text-center" style="color:green;"></div>
     </div>
 
+    <!-- Confetti JS Script added at the bottom to ensure it's loaded before being used -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 

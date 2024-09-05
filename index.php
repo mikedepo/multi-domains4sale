@@ -18,7 +18,7 @@ $domain= $_SERVER['SERVER_NAME'];
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Domain4Sale Form</title>
+    <title>Domain for Sale</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet">
@@ -38,7 +38,7 @@ domainname =location.hostname;
       <div class="col-sm-6">
 	   <h1> <?php echo $domain; ?> </h1>
 	   <p id="domainname">Like the domain name?</p>		
-		<h2>This domain is for sale Only - $89</h2>
+		<h2>This domain is for sale Only - CAD $3500</h2>
 		<h3>Contact site owner below:</h3>
 		
         <form class="form-horizontal" role="form">

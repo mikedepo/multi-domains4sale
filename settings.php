@@ -3,7 +3,7 @@
 settings.php file
 */
 
-define("CONTACT_FORM", 'domainsaleform@enterprisal.com');
+define("CONTACT_FORM", 'domainsforsale@avgsoft.ca');
 
 
 ?>

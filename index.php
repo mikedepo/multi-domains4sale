@@ -1,13 +1,16 @@
 <?php
 // Get domain prices from environment variable
 $domainPrices = isset($_ENV['DOMAIN_PRICES']) ? json_decode($_ENV['DOMAIN_PRICES'], true) : [];
+$domainRedirects = isset($_ENV['DOMAIN_REDIRECTS']) ? json_decode($_ENV['DOMAIN_REDIRECTS'], true) : [];
 
 // Get the current domain and normalize it (remove "www." if present)
 $domain = strtolower($_SERVER['HTTP_HOST']);
 $domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 
-// Fetch the price for the current domain or display "PLEASE CONTACT FOR PRICE"
+// Fetch the price and redirect link for the current domain
 $priceValue = isset($domainPrices[$domain]) ? $domainPrices[$domain] : null;
+$redirectUrl = isset($domainRedirects[$domain]) ? $domainRedirects[$domain] : 'https://default-redirect.com'; // Default redirect if not set
+
 $price = $priceValue ? "CAD $" . $priceValue : "PLEASE CONTACT FOR PRICE";
 
 // Get EmailJS keys from environment variables
@@ -89,6 +92,7 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         var emailjsServiceId = "<?php echo $emailjsServiceId; ?>";
         var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
         var priceValue = <?php echo $priceValue ? $priceValue : 'null'; ?>; // Get price as a number
+        var redirectUrl = "<?php echo $redirectUrl; ?>"; // URL to redirect after 5 seconds
 
         emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
 
@@ -99,7 +103,25 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         // Set domain in the hidden input field
         document.getElementById("hiddenDomain").value = domain;
 
-        // Function to show warning messages
+        // Show initial message and set up redirection
+        const contentSection = document.getElementById('content-section');
+        const redirectMessage = document.getElementById('redirect-message');
+        let redirectTimeout;
+
+        // Show the redirect message for 5 seconds
+        redirectTimeout = setTimeout(function() {
+          window.location.href = redirectUrl;
+        }, 5000);
+
+        // If the user clicks the link, stop the redirection and show the form content
+        document.getElementById('cancel-redirect').addEventListener('click', function(e) {
+          e.preventDefault();
+          clearTimeout(redirectTimeout); // Stop the redirection
+          redirectMessage.style.display = 'none'; // Hide the message
+          contentSection.style.display = 'block'; // Show the form
+        });
+
+        // Function to show warning messages (already implemented)
         function showWarning(input, message) {
           let warningElement = input.parentElement.querySelector('.warning');
           if (!warningElement) {
@@ -110,21 +132,16 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
           warningElement.textContent = message;
         }
 
-        // Function to clear warning messages
-        function clearWarning(input) {
-          const warningElement = input.parentElement.querySelector('.warning');
-          if (warningElement) {
-            warningElement.remove();
-          }
-        }
-
-        // Listen for changes in the "Make an Offer" field
+        // Real-time offer validation (already implemented)
         document.getElementById("inputOffer").addEventListener("input", function() {
           const offerValue = parseFloat(this.value);
           if (!isNaN(offerValue) && priceValue && offerValue < 0.8 * priceValue) {
             showWarning(this, "Offers are more likely to be accepted if they are 80% of the asking price or more.");
           } else {
-            clearWarning(this);
+            const warningElement = this.parentElement.querySelector('.warning');
+            if (warningElement) {
+              warningElement.remove();
+            }
           }
         });
 
@@ -209,8 +226,11 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
 
   </head>
   <body>
+    <div id="redirect-message" class="container text-center">
+      <p>You will be redirected in 5 seconds, to buy this domain, <a href="#" id="cancel-redirect">click here</a>.</p>
+    </div>
 
-    <div class="container">
+    <div id="content-section" class="container" style="display: none;">
       <div class="text-center mb-5">
         <h1 id="domainname"> </h1> <!-- Domain name will be injected here -->
         <p class="lead">This domain is available for purchase!</p>        

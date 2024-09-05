@@ -9,7 +9,7 @@ $domain = preg_replace('/^www\./', '', $domain); // Remove "www." if it exists
 
 // Fetch the price and redirect link for the current domain
 $priceValue = isset($domainPrices[$domain]) ? $domainPrices[$domain] : null;
-$redirectUrl = isset($domainRedirects[$domain]) ? $domainRedirects[$domain] : 'https://default-redirect.com'; // Default redirect if not set
+$redirectUrl = isset($domainRedirects[$domain]) ? $domainRedirects[$domain] : null; // Set to null if not found
 
 $price = $priceValue ? "CAD $" . $priceValue : "PLEASE CONTACT FOR PRICE";
 
@@ -92,7 +92,7 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         var emailjsServiceId = "<?php echo $emailjsServiceId; ?>";
         var emailjsTemplateId = "<?php echo $emailjsTemplateId; ?>";
         var priceValue = <?php echo $priceValue ? $priceValue : 'null'; ?>; // Get price as a number
-        var redirectUrl = "<?php echo $redirectUrl; ?>"; // URL to redirect after 5 seconds
+        var redirectUrl = "<?php echo $redirectUrl; ?>"; // Get the redirect URL or null
 
         emailjs.init(emailjsUserId); // Initialize EmailJS with User ID
 
@@ -108,17 +108,23 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         const redirectMessage = document.getElementById('redirect-message');
         let redirectTimeout;
 
-        // Show the redirect message for 5 seconds
-        redirectTimeout = setTimeout(function() {
-          window.location.href = redirectUrl;
-        }, 5000);
+         if (redirectUrl) {
+          // Show the redirect message and set a timeout for redirection
+          redirectMessage.style.display = 'block';
+          setTimeout(function() {
+            window.location.href = redirectUrl;
+          }, 5000);
+        } else {
+          // No redirect URL, show the offer form immediately
+          contentSection.style.display = 'block';
+        }
 
         // If the user clicks the link, stop the redirection and show the form content
         document.getElementById('cancel-redirect').addEventListener('click', function(e) {
           e.preventDefault();
-          clearTimeout(redirectTimeout); // Stop the redirection
-          redirectMessage.style.display = 'none'; // Hide the message
-          contentSection.style.display = 'block'; // Show the form
+          clearTimeout(redirectTimeout);
+          redirectMessage.style.display = 'none';
+          contentSection.style.display = 'block';
         });
 
         // Function to show warning messages (already implemented)

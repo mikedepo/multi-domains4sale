@@ -99,10 +99,39 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
         // Set domain in the hidden input field
         document.getElementById("hiddenDomain").value = domain;
 
+        // Function to show warning messages
+        function showWarning(input, message) {
+          let warningElement = input.parentElement.querySelector('.warning');
+          if (!warningElement) {
+            warningElement = document.createElement('div');
+            warningElement.className = 'warning';
+            input.parentElement.appendChild(warningElement);
+          }
+          warningElement.textContent = message;
+        }
+
+        // Function to clear warning messages
+        function clearWarning(input) {
+          const warningElement = input.parentElement.querySelector('.warning');
+          if (warningElement) {
+            warningElement.remove();
+          }
+        }
+
+        // Listen for changes in the "Make an Offer" field
+        document.getElementById("inputOffer").addEventListener("input", function() {
+          const offerValue = parseFloat(this.value);
+          if (!isNaN(offerValue) && priceValue && offerValue < 0.8 * priceValue) {
+            showWarning(this, "Offers are more likely to be accepted if they are 80% of the asking price or more.");
+          } else {
+            clearWarning(this);
+          }
+        });
+
         // Form validation function
         function validateForm() {
           // Clear previous error messages
-          document.querySelectorAll('.error, .warning').forEach(el => el.remove());
+          document.querySelectorAll('.error').forEach(el => el.remove());
 
           let valid = true;
           const name = document.getElementById("inputName");
@@ -139,8 +168,6 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
           } else if (isNaN(offer.value) || offer.value <= 0) {
             showError(offer, "Please enter a valid numeric offer");
             valid = false;
-          } else if (priceValue && offer.value < 0.8 * priceValue) {
-            showWarning(offer, "Offers are more likely to be accepted if they are 80% of the asking price or more.");
           }
 
           return valid;
@@ -152,14 +179,6 @@ $emailjsTemplateId = $_ENV['EMAILJS_TEMPLATE_ID'] ?? '';
           errorElement.className = 'error';
           errorElement.textContent = message;
           input.parentElement.appendChild(errorElement);
-        }
-
-        // Function to show warning messages
-        function showWarning(input, message) {
-          const warningElement = document.createElement('div');
-          warningElement.className = 'warning';
-          warningElement.textContent = message;
-          input.parentElement.appendChild(warningElement);
         }
 
         // Handle form submission with validation

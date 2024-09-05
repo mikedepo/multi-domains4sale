@@ -1,5 +1,5 @@
 <?php include('stats/stl.php'); 
-$domain= $_SERVER['SERVER_NAME'];
+$domain= $_SERVER['HTTP_HOST'];
 // below added on 12/25/2018
 // Source: http://carlofontanos.com/adding-a-simple-math-captcha-to-your-form-in-php/
     $num1=rand(1,9); //Generate First number between 1 and 9  
